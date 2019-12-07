@@ -19,7 +19,7 @@ from glob import glob
 COCO_MODEL_URL = "https://github.com/matterport/Mask_RCNN/releases/download/v2.0/mask_rcnn_coco.h5"
 
 class ROBDataSet(utils.Dataset):
-	def init_dataset(self, Root_Path='/content/data-2019/', ifTest:bool=False, start_idx: int=0, end_idx: int=7573, ifInfere: bool=False):
+	def init_dataset(self, Root_Path='/content/data-2019/', ifTest:bool=False, start_idx: int=0, end_idx: int=7360, ifInfere: bool=False):
 		self.source = "ROB535"
 		self.root_path = Root_Path
 		self.train_img_list = glob(self.root_path+'trainval/*/*_image.jpg')
@@ -29,29 +29,29 @@ class ROBDataSet(utils.Dataset):
 		if ifInfere:
 			self.test_img_list = glob(self.root_path+'test/*/*_image.jpg')
 
-		self.add_class(self.source, 0, 'Unknown')
-		self.add_class(self.source, 1, 'Compact')
-		self.add_class(self.source, 2, 'Sedan')
-		self.add_class(self.source, 3, 'SUV')
-		self.add_class(self.source, 4, 'Coupe')
-		self.add_class(self.source, 5, 'Muscle')
-		self.add_class(self.source, 6, 'SportClassic')
-		self.add_class(self.source, 7, 'Sport')
-		self.add_class(self.source, 8, 'Super')
-		self.add_class(self.source, 9, 'Motorcycle')
-		self.add_class(self.source, 10, 'Offroad')
-		self.add_class(self.source, 11, 'Industrial')
-		self.add_class(self.source, 12, 'Utility')
-		self.add_class(self.source, 13, 'Van')
-		self.add_class(self.source, 14, 'Cycle')
-		self.add_class(self.source, 15, 'Boat')
-		self.add_class(self.source, 16, 'Helicopter')
-		self.add_class(self.source, 17, 'Plane')
-		self.add_class(self.source, 18, 'Service')
-		self.add_class(self.source, 19, 'Emergency')
-		self.add_class(self.source, 20, 'Military')
-		self.add_class(self.source, 21, 'Commercial')
-		self.add_class(self.source, 22, 'Train')
+		self.add_class(self.source, 1, 'Miscellaneous')
+		self.add_class(self.source, 2, 'Car')
+		self.add_class(self.source, 3, 'Truck')
+		self.add_class(self.source, 4, 'Bike')
+		# self.add_class(self.source, 4, 'Coupe')
+		# self.add_class(self.source, 5, 'Muscle')
+		# self.add_class(self.source, 6, 'SportClassic')
+		# self.add_class(self.source, 7, 'Sport')
+		# self.add_class(self.source, 8, 'Super')
+		# self.add_class(self.source, 9, 'Motorcycle')
+		# self.add_class(self.source, 10, 'Offroad')
+		# self.add_class(self.source, 11, 'Industrial')
+		# self.add_class(self.source, 12, 'Utility')
+		# self.add_class(self.source, 13, 'Van')
+		# self.add_class(self.source, 14, 'Cycle')
+		# self.add_class(self.source, 15, 'Boat')
+		# self.add_class(self.source, 16, 'Helicopter')
+		# self.add_class(self.source, 17, 'Plane')
+		# self.add_class(self.source, 18, 'Service')
+		# self.add_class(self.source, 19, 'Emergency')
+		# self.add_class(self.source, 20, 'Military')
+		# self.add_class(self.source, 21, 'Commercial')
+		# self.add_class(self.source, 22, 'Train')
 
 		if ifTest:
 			for i, path in enumerate(self.test_img_list):
@@ -71,13 +71,13 @@ class ROBDataSet(utils.Dataset):
 		label_3 = [9, 10, 14]
 		
 		if class_id in label_0:
-			return 0
-		if class_id in label_1:
 			return 1
-		if class_id in label_2:
+		if class_id in label_1:
 			return 2
-		if class_id in label_3:
+		if class_id in label_2:
 			return 3
+		if class_id in label_3:
+			return 4
 		return -1
 
 
@@ -107,8 +107,8 @@ class ROBDataSet(utils.Dataset):
 			vert_2D = vert_2D / vert_2D[2, :]
 			min_x = min(vert_2D[0, :])
 			max_x = max(vert_2D[0, :])
-			min_y = min(vert_2D[0, :])
-			max_y = max(vert_2D[0, :])
+			min_y = min(vert_2D[1, :])
+			max_y = max(vert_2D[1, :])
 			points = np.array([[min_x, min_y], [min_x, max_y], [max_x, max_y], [max_x, min_y]])
 			mask = cv2.fillConvexPoly(mask, np.int32(points), 1)
 		return mask, label
