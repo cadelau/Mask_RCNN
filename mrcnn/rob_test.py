@@ -40,3 +40,6 @@ results = model.detect([original_image], verbose=1)
 r = results[0]
 visualize.display_instances(original_image, r['rois'], r['masks'], r['class_ids'], 
                             dataset_test.class_names, r['scores'], ax=get_ax())
+
+
+#### SUBTRACT 1 FROM LABEL for CSV file!!!!

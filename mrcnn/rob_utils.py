@@ -97,21 +97,30 @@ class ROBDataSet(utils.Dataset):
 			mask = np.zeros((1052, 1914, 1), dtype=np.uint8)
 			bbox = bbox.reshape([-1, 11])
 
-			label = np.array([self.class2label(bbox[0, -2])], np.int32)
-			R = self.rot(bbox[0, 0:3])
-			t = bbox[0, 3:6]
-			sz = bbox[0, 6:9]
-			vert_3D, _ = self.get_bbox(-sz / 2, sz / 2)
-			vert_3D = R @ vert_3D + t[:, np.newaxis]
-			vert_2D = proj @ np.vstack([vert_3D, np.ones(vert_3D.shape[1])])
-			vert_2D = vert_2D / vert_2D[2, :]
-			min_x = min(vert_2D[0, :])
-			max_x = max(vert_2D[0, :])
-			min_y = min(vert_2D[1, :])
-			max_y = max(vert_2D[1, :])
-			points = np.array([[min_x, min_y], [min_x, max_y], [max_x, max_y], [max_x, min_y]])
-			mask = cv2.fillConvexPoly(mask, np.int32(points), 1)
-		return mask, label
+			largest_area = -1
+			largest_label = -1
+			largest_points = np.array([[0,0], [0,0], [0,0], [0,0]])
+			for i in range(bbox.shape[0]):
+				label = np.array([self.class2label(bbox[i, -2])], np.int32)
+				R = self.rot(bbox[i, 0:3])
+				t = bbox[i, 3:6]
+				sz = bbox[i, 6:9]
+				vert_3D, _ = self.get_bbox(-sz / 2, sz / 2)
+				vert_3D = R @ vert_3D + t[:, np.newaxis]
+				vert_2D = proj @ np.vstack([vert_3D, np.ones(vert_3D.shape[1])])
+				vert_2D = vert_2D / vert_2D[2, :]
+				min_x = min(vert_2D[0, :])
+				max_x = max(vert_2D[0, :])
+				min_y = min(vert_2D[1, :])
+				max_y = max(vert_2D[1, :])
+				points = np.array([[min_x, min_y], [min_x, max_y], [max_x, max_y], [max_x, min_y]])
+				area = (max_x-min_x)*(max_y-min_y)
+				if area > largest_area:
+					largest_area = area
+					largest_label = label
+					largest_points = points
+			mask = cv2.fillConvexPoly(mask, np.int32(largest_points), 1)
+		return mask, largest_label
 
 	def rot(self, n):
 		n = np.asarray(n).flatten()
