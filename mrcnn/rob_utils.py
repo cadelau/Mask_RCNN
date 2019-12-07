@@ -13,6 +13,7 @@ import urllib.request
 import shutil
 import warnings
 from distutils.version import LooseVersion
+from glob import glob
 
 # URL from which to download the latest COCO trained weights
 COCO_MODEL_URL = "https://github.com/matterport/Mask_RCNN/releases/download/v2.0/mask_rcnn_coco.h5"
@@ -42,6 +43,23 @@ class ROBDataSet(utils.Dataset):
 	def image_reference(self, image_id):
 		info = self.image_info[image_id]
 		return info["path"]
+
+	def class2label(class_id):
+		label_0 = [0, 15, 16, 17, 22]
+		label_1 = [1, 2, 3, 4, 5, 6, 7, 8]
+		label_2 = [11, 12, 13, 18, 19, 20, 21]
+		label_3 = [9, 10, 14]
+		
+		if class_id in label_0:
+			return 0
+		if class_id in label_1:
+			return 1
+		if class_id in label_2:
+			return 2
+		if class_id in label_3:
+			return 3
+		return -1
+
 
 	def load_mask(self, image_id):
 		img_path = self.image_info[image_id]["path"]
@@ -90,7 +108,7 @@ class ROBDataSet(utils.Dataset):
 
 	def get_bbox(self, p0, p1):
 		v = np.array([
-			[p0[0], po[0], p0[0]. p0[0], p1[0], p1[0], p1[0], p1[0]],
+			[p0[0], p0[0], p0[0]. p0[0], p1[0], p1[0], p1[0], p1[0]],
 			[p0[1], p0[1], p1[1], p1[1], p0[1], p0[1], p1[1], p1[1]],
 			[p0[2], p1[2], p0[2], p1[2], p0[2], p1[2], p0[2], p1[2]]
 		])
