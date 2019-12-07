@@ -32,6 +32,7 @@ class ROBDataSet(utils.Dataset):
 		self.add_class(self.source, 1, 'label 0')
 		self.add_class(self.source, 2, 'label 1')
 		self.add_class(self.source, 3, 'label 2')
+		self.add_class(self.source, 4, 'label 3')
 
 		if ifTest:
 			for i, path in enumerate(self.test_img_list):
