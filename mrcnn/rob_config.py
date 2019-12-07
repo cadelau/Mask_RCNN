@@ -35,3 +35,8 @@ class ROBConfig(Config):
 # Run these lines in the co-lab cell where this is imported:  
 # config = ROBConfig()
 # config.display()
+
+
+class InferenceConfig(ROBConfig):
+    GPU_COUNT = 1
+    IMAGES_PER_GPU = 1
