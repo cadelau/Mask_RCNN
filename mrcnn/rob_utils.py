@@ -19,7 +19,7 @@ from glob import glob
 COCO_MODEL_URL = "https://github.com/matterport/Mask_RCNN/releases/download/v2.0/mask_rcnn_coco.h5"
 
 class ROBDataSet(utils.Dataset):
-	def init_dataset(self, Root_Path='/Users/cadelau/Documents/Self-Driving/Project/rob535-fall-2019-task-1-image-classification/data-2019/', ifTest:bool=False, start_idx: int=0, end_idx: int=7573, ifInfere: bool=False):
+	def init_dataset(self, Root_Path='/content/data-2019/', ifTest:bool=False, start_idx: int=0, end_idx: int=7573, ifInfere: bool=False):
 		self.source = "ROB535"
 		self.root_path = Root_Path
 		self.train_img_list = glob(self.root_path+'trainval/*/*_image.jpg')
@@ -44,7 +44,7 @@ class ROBDataSet(utils.Dataset):
 		info = self.image_info[image_id]
 		return info["path"]
 
-	def class2label(class_id):
+	def class2label(self, class_id):
 		label_0 = [0, 15, 16, 17, 22]
 		label_1 = [1, 2, 3, 4, 5, 6, 7, 8]
 		label_2 = [11, 12, 13, 18, 19, 20, 21]
@@ -77,7 +77,7 @@ class ROBDataSet(utils.Dataset):
 			mask = np.zeros((1052, 1914, 1), dtype=np.uint8)
 			bbox = bbox.reshape([-1, 11])
 
-			label = np.array([class2label(bbox[0, -2])], np.int32)
+			label = np.array([self.class2label(bbox[0, -2])], np.int32)
 			R = self.rot(bbox[0, 0:3])
 			t = bbox[0, 3:6]
 			sz = bbox[0, 6:9]
@@ -102,13 +102,13 @@ class ROBDataSet(utils.Dataset):
 			n /= theta
 			K = np.array([[0, -n[2], n[1]], [n[2], 0, -n[0]], [-n[1], n[0], 0]])
 
-			return np.indentity(3) + np.sin(theta) * K + (1 - np.cos(theta)) * K @ K
+			return np.identity(3) + np.sin(theta) * K + (1 - np.cos(theta)) * K @ K
 		else:
-			return np.indentity(3)
+			return np.identity(3)
 
 	def get_bbox(self, p0, p1):
 		v = np.array([
-			[p0[0], p0[0], p0[0]. p0[0], p1[0], p1[0], p1[0], p1[0]],
+			[p0[0], p0[0], p0[0], p0[0], p1[0], p1[0], p1[0], p1[0]],
 			[p0[1], p0[1], p1[1], p1[1], p0[1], p0[1], p1[1], p1[1]],
 			[p0[2], p1[2], p0[2], p1[2], p0[2], p1[2], p0[2], p1[2]]
 		])
