@@ -29,10 +29,29 @@ class ROBDataSet(utils.Dataset):
 		if ifInfere:
 			self.test_img_list = glob(self.root_path+'test/*/*_image.jpg')
 
-		self.add_class(self.source, 1, 'label 0')
-		self.add_class(self.source, 2, 'label 1')
-		self.add_class(self.source, 3, 'label 2')
-		self.add_class(self.source, 4, 'label 3')
+		self.add_class(self.source, 0, 'Unknown')
+		self.add_class(self.source, 1, 'Compact')
+		self.add_class(self.source, 2, 'Sedan')
+		self.add_class(self.source, 3, 'SUV')
+		self.add_class(self.source, 4, 'Coupe')
+		self.add_class(self.source, 5, 'Muscle')
+		self.add_class(self.source, 6, 'SportClassic')
+		self.add_class(self.source, 7, 'Sport')
+		self.add_class(self.source, 8, 'Super')
+		self.add_class(self.source, 9, 'Motorcycle')
+		self.add_class(self.source, 10, 'Offroad')
+		self.add_class(self.source, 11, 'Industrial')
+		self.add_class(self.source, 12, 'Utility')
+		self.add_class(self.source, 13, 'Van')
+		self.add_class(self.source, 14, 'Cycle')
+		self.add_class(self.source, 15, 'Boat')
+		self.add_class(self.source, 16, 'Helicopter')
+		self.add_class(self.source, 17, 'Plane')
+		self.add_class(self.source, 18, 'Service')
+		self.add_class(self.source, 19, 'Emergency')
+		self.add_class(self.source, 20, 'Military')
+		self.add_class(self.source, 21, 'Commercial')
+		self.add_class(self.source, 22, 'Train')
 
 		if ifTest:
 			for i, path in enumerate(self.test_img_list):
