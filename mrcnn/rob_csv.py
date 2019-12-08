@@ -25,11 +25,13 @@ def generate_output_csv(labels):
 
     """
     # Test data files are available in the data-2019/test folder
-    test_data_dir = os.path.abspath(__file__).replace('generate_output_csv.py', 'data-2019/test')
+    # test_data_dir = os.path.abspath(__file__).replace('generate_output_csv.py', 'data-2019/test')
+    test_data_dir = '../data-2019/test/'
 
     # Set up csv rows list and specify filename in same directory as generate_output_csv.py
     csv_rows = [['guid/image', 'label']]
-    csv_filename = os.path.abspath(__file__).replace('generate_output_csv.py', 'test_results.csv')
+    # csv_filename = os.path.abspath(__file__).replace('generate_output_csv.py', 'test_results.csv')
+    csv_filename = 'test_results.csv'
 
     # Step through all files in test_data_dir
     index = 0
@@ -45,7 +47,7 @@ def generate_output_csv(labels):
                 guid = os.path.join(folder_num, file_num)
     #             print(guid) # optionally print guid's to check if this is working
                 # Append new row to csv_rows list
-                csv_rows.append([guid, labels(index)])
+                csv_rows.append([guid, labels[index]])
                 index = index + 1
 
     # Any results you write to the current directory are saved as output.
