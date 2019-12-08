@@ -35,11 +35,31 @@ visualize.display_instances(original_image, gt_bbox, gt_mask, gt_class_id,
                             dataset_train.class_names, figsize=(8, 8))
 
 
+# results = model.detect([original_image], verbose=1)
+
+# r = results[0]
+# visualize.display_instances(original_image, r['rois'], r['masks'], r['class_ids'], 
+#                             dataset_test.class_names, r['scores'], ax=get_ax())
 results = model.detect([original_image], verbose=1)
 
 r = results[0]
-visualize.display_instances(original_image, r['rois'], r['masks'], r['class_ids'], 
-                            dataset_test.class_names, r['scores'], ax=get_ax())
+rois = r['rois']
+largest_index = -1
+largest_area = -1
+index = 0
+for roi in rois:
+  area = (roi[2]-roi[0]) * (roi[3] - roi[1])
+  if area > largest_area:
+    largest_area = area
+    largest_index = index
+  index = index + 1
+# print(largest_index)
+largest_roi = np.reshape(r['rois'][largest_index,:], (1,4))
+largest_mask = np.reshape(r['masks'][:,:,largest_index], (128, 128, 1))
+largest_class_id = np.array([r['class_ids'][largest_index]])
+largest_score = np.array([r['scores'][largest_index]])
+visualize.display_instances(original_image, largest_roi, largest_mask, largest_class_id, 
+                            dataset_test.class_names, largest_score, ax=get_ax())
 
 
 #### SUBTRACT 1 FROM LABEL for CSV file!!!!
