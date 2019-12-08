@@ -31,6 +31,13 @@ class ROBConfig(Config):
 
     # use small validation steps since the epoch is small
     VALIDATION_STEPS = 5
+
+    # Max number of final detections
+    DETECTION_MAX_INSTANCES = 50
+
+    # Minimum probability value to accept a detected instance
+    # ROIs below this threshold are skipped
+    DETECTION_MIN_CONFIDENCE = 0.4
   
 # Run these lines in the co-lab cell where this is imported:  
 # config = ROBConfig()
