@@ -33,7 +33,7 @@ class ROBConfig(Config):
     VALIDATION_STEPS = 5
 
     # Max number of final detections
-    DETECTION_MAX_INSTANCES = 50
+    DETECTION_MAX_INSTANCES = 10
 
     # Minimum probability value to accept a detected instance
     # ROIs below this threshold are skipped
