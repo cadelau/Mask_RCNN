@@ -51,8 +51,10 @@ model_path = "/content/drive/Shared drives/Self-Driving Cars Project/h5_files/Tr
 print("Loading weights from ", model_path)
 model.load_weights(model_path, by_name=True)
 
+
 r_vals = []
 theta_vals = []
+image_count = 0
 for image_path in image_pathnames:
   # image = dataset_test.load_image(image_id)
   image = skimage.io.imread(image_path)
@@ -62,12 +64,13 @@ for image_path in image_pathnames:
       min_scale=config.IMAGE_MIN_SCALE,
       max_dim=config.IMAGE_MAX_DIM,
       mode=config.IMAGE_RESIZE_MODE)
+  print(image.shape)
   results = model.detect([image], verbose=1)
   r = results[0]
   rois = r['rois']
   largest_index = -1
   largest_area = -1
-  largest_roi = roi[0]
+  # largest_roi = rois[0]
   index = 0
   # selecting largest block assuming it is the closest.
   for roi in rois:
@@ -77,6 +80,9 @@ for image_path in image_pathnames:
       largest_index = index
       largest_roi = roi
     index = index + 1
+  image_count += 1
+  print('Tested %d images so far.' % image_count)
+  print(image_path)
   
   # if for some reason our algorithm doesn't detect anything, pick default x,y,z values
   if largest_index == -1:
@@ -84,14 +90,47 @@ for image_path in image_pathnames:
     y = 0
     z = 25
   else:
-    x = (largest_roi[2] + largest_roi[0])/2 + 512 # shift (0,0) from top left to center
-    y = (largest_roi[3] + largest_roi[1])/2 + 512 # shift (0,0) from top left to center
-    z = 25
-  r_val = math.sqrt(x*x + y*y + z*z)
-  theta_val = math.degrees(math.atan(x/z))
+    # print(largest_roi)
+    centroid_y = (largest_roi[2] + largest_roi[0])/2 
+    centroid_x = (largest_roi[3] + largest_roi[1])/2 # shift (0,0) from top left to center
+    #resize
+    centroid_y = centroid_y/1024*1052
+    centroid_x = centroid_x/1024*1914
+    xyz = np.fromfile(image_path.replace('_image.jpg', '_cloud.bin'), dtype=np.float32)
+    xyz = xyz.reshape([3, -1])
+    proj = np.fromfile(image_path.replace('_image.jpg', '_proj.bin'), dtype=np.float32)
+    proj.resize([3, 4])
+    uvs = proj @ np.vstack([xyz, np.ones_like(xyz[0, :])])
+    uvs = uvs / uvs[2, :]
+    centroid = np.array([centroid_x, centroid_y])
+    lowest_norm = np.linalg.norm(centroid - uvs[0:2, 0])
+    lowest_norm_index = 0
+    norm_index = 0
+    for uv in np.transpose(uvs):
+      euc_norm = np.linalg.norm(centroid - uv[0:2])
+      # print(centroid - uv[0:2])
+      if euc_norm < lowest_norm:
+        # print((centroid - uv[0:2]).shape)
+        lowest_norm = euc_norm
+        lowest_norm_index = norm_index
+      norm_index += 1
+    # print(lowest_norm)
+    x,y,z = xyz[:,lowest_norm_index]
+    # print(xyz[:,0])
+    # print(proj)
+    # print(uv.shape)
+    # x = 0
+    # y = 0
+    # z = 25
+  # print([x,y,z])
+  r_val = math.sqrt(x*x + y*y + z*z) + 5
+  if r_val > 50:
+    r_val = 50
+  theta_val = (np.arctan2(x,z))*180/np.pi
   r_vals.append(r_val)
   theta_vals.append(theta_val)
   print(r_val)
+  print(theta_val)
 
 
 #### PART 3
